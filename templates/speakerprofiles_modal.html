@@ -1,0 +1,49 @@
+<div class="modal fade" id="speakerprofilesModal" aria-hidden="true" aria-labelledby="speakerprofilesModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalToggleLabel">profiles</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/profile" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                      <label for="profile_image" class="form-label">Profile Image</label>
+                      <input type="file" class="form-control" name="profile_image" id="profile_image" placeholder="select an image" aria-describedby="fileHelper">
+                      <div id="fileHelper" class="form-text">Select a valid image</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="gender" class="form-label">Gender</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="gender" id="female"
+                                    value="{3:option1}">
+                                <label class="form-check-label" for="female">Female</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="gender" id="male" value="M">
+                                <label class="form-check-label" for="male">Male</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="gender" id="not_preferred" value="O">
+                                <label class="form-check-label" for="not_preferred">Not preferred to say</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="occupation" class="form-label">Occupation</label>
+                        <input type="text" name="occupation" required class="form-control" id="occupation" placeholder="enter occupation">
+                    </div>
+                    <div class="mb-3">
+                        <label for="company" class="form-label">Company</label>
+                        <input type="text" name="company" required class="form-control" id="company" placeholder="enter your company name">
+                    </div>
+                   
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success">Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,70 @@
+<div class="modal fade" id="seminarModal" aria-hidden="true" aria-labelledby="seminarModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalToggleLabel">Create Seminar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/seminar/create" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="topic" class="form-label">Seminar Topic</label>
+                        <input type="text" name="topic" required class="form-control" id="topic" placeholder="topic of seminar">
+                    </div>
+                    <div class="mb-3">
+                        <label for="speaker" class="form-label">Speaker</label>
+                        <input type="text" name="speaker" required class="form-control" id="speaker" placeholder=" speaker info">
+                    </div>
+                    <div class="mb-3">
+                        <label for="Linkedin" class="form-label">Speaker LinkedIn</label>
+                        <input type="text" name="Linkedin" required class="form-control" id="Linkedin" placeholder="LinkedIn id ">
+                    <div class="mb-3">
+                        <label for="sem_description" class="form-label">Seminar Description</label>
+                        <input type="text" name="sem_description" required class="form-control" id="sem_description" placeholder="description of seminar">
+                    </div>
+                    <div class="mb-3">
+                        <label for="sem_date" class="form-label">Seminar Date</label>
+                        <input type="date" name="sem_date" required class="form-control" id="sem_date" placeholder="date of seminar">
+                    </div>
+                    <div class="mb-3">
+                        <label for="sem_time" class="form-label">Seminar Time</label>
+                        <input type="time" name="sem_time" required class="form-control" id="sem_time" placeholder="time of seminar">
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Seminar Notes</label>
+                        <input type="file" name="notes" required class="form-control" id="notes" placeholder="seminar notes">
+                    </div>
+                    <div class="mb-3">
+                        <label for="sem_location" class="form-label">Seminar Location</label>
+                        <input type="text" name="sem_location" required class="form-control" id="sem_location" placeholder="location of seminar">
+                    </div>
+                    
+                    <div class="mb-3">city
+                        <label for="city" class="form-label">City</label>
+                        <select class="form-select form-select-lg" name="city" id="city">
+                            <option selected disabled>Select one</option>
+                            <option value="new delhi">New Delhi</option>
+                            <option value="istanbul">Istanbul</option>
+                            <option value="jakarta">Jakarta</option>
+                            <option value="lucknow">Lucknow</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="event_id" class="form-label">Event</label>
+                        <select class="form-select form-select-lg" name="event_id" id="event_id">
+                            <option selected>Select one</option>
+                            {% for e in events %}
+                            <option value="{{e.id}}">{{e.name}}</option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                </div> 
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success">Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+{% include 'base.html' %}
+{% include 'seminar_modal.html' %}
+{% block css %}
+<style>
+  button{
+    margin-top: 20px;
+    margin-left: 10px;
+    position: center;
+  }
+  body{
+    background-image: url(https://wallpaperaccess.com/full/1156791.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+<!-- Modal trigger button -->
+<button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#seminarModal">
+  create new seminar
+</button>
+</div>
+
+{% endblock %}
+{% block js %}
+{% endblock %}

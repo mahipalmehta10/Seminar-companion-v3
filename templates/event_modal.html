@@ -1,0 +1,51 @@
+<div class="modal fade" id="eventModal" aria-hidden="true" aria-labelledby="eventModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalToggleLabel">Create Event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/event/create" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="organization" class="form-label">Organization</label>
+                        <input type="text" name="organization" required class="form-control" id="organization" placeholder="organization name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Event Name</label>
+                        <input type="text" name="name" required class="form-control" id="name" placeholder=" name of event">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Event Description</label>
+                        <input type="text" name="description" required class="form-control" id="description" placeholder="description of event">
+                    </div>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Event Date</label>
+                        <input type="date" name="date" required class="form-control" id="date" placeholder="date of event">
+                    </div>
+                    <div class="mb-3">
+                        <label for="time" class="form-label">Event Time</label>
+                        <input type="time" name="time" required class="form-control" id="time" placeholder="time of event">
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Event Location</label>
+                        <input type="text" name="location" required class="form-control" id="location" placeholder="location of event">
+                    </div>
+                    <div class="mb-3">
+                        <label for="days" class="form-label">Days</label>
+                        <input type="number" name="days" required class="form-control" id="days" placeholder=" no of days of event">
+                    </div>
+                    <div class="mb-3">
+                      <label for="avatar" class="form-label">Event banner</label>
+                      <input type="file" class="form-control" name="avatar" id="avatar" placeholder="select an image" aria-describedby="fileHelper">
+                      <div id="fileHelper" class="form-text">Select a valid image</div>
+                    </div>
+                </div> 
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success">Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

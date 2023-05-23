@@ -1,0 +1,46 @@
+{% include 'base.html' %}
+{% include 'event_modal.html' %}
+{% block css %}
+<style>
+  button{
+    margin-top: 20px;
+    margin-left: 10px;
+    position: center;
+  }
+  body{
+    background-image: url(https://wallpaperaccess.com/full/1156791.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+  <!-- Modal trigger button -->
+  <div class="row">
+    {% if session.isauth %}
+    <div class="col-md-2">
+      <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#eventModal">
+        create new event
+      </button>
+    </div>
+    {% endif %}
+    
+    <div class="col-md-10">
+      <h1>Events</h1>
+      {% for e in events %}
+      <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="container-fluid py-5">
+          <h1 class="display-5 fw-bold">{{e.name}}</h1>
+          <p class="col-md-8 fs-4">date :{{e.date.date()}}.</p>
+          <a class="btn btn-primary btn-lg" href="/event/detail/{{e.id}}">View</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block js %}
+{% endblock %}

@@ -152,7 +152,10 @@ def view_profile():
     else:
         flash('Please login to continue', 'danger')
         return redirect(url_for('index'))
-    
+
+@app.route('/home')  
+def home():
+    return render_template('index.html') 
 @app.route('/events')
 def events():
 #  get all upcoming events from current date
@@ -192,6 +195,7 @@ def event_create():
                       description=description, date=date_sql, time=time_sql, 
                       location=location, days=days, avatar=save_file(avtar), user_id=user_id))
         flash('Event created successfully', 'success')
+        return redirect(url_for('events'))
     flash('Create event', 'warning')
     return redirect(url_for('events'))
 
@@ -201,6 +205,7 @@ def event_detail(id):
     event = db.query(Event).filter_by(id=id).first()
     # get all seminars for this event
     seminars = db.query(Seminar).filter_by(event=id).all()
+    print(seminars)
     return render_template('event_detail.html', event=event, seminars=seminars)
 
 
@@ -208,10 +213,11 @@ def event_detail(id):
 def seminar():
     events = db_get_all(Event)
     seminars = db_get_all(Seminar)
-    return render_template('seminar.html', seminars=seminars)
+    return render_template('seminar.html', seminars=seminars,events=events)
 
 @app.route('/seminar/create', methods=[ 'POST'])
 def seminar_create():
+   
     if request.method == 'POST':
         topic = request.form.get('topic')
         speaker = request.form.get('speaker')
@@ -223,6 +229,8 @@ def seminar_create():
         notes = request.files.get('notes')
         city= request.form.get('city')
         event = request.form.get('event_id')
+        date_sql = datetime.strptime(sem_date, '%Y-%m-%d')
+        time_sql = datetime.strptime(sem_time, '%H:%M')
         if len(topic) < 3:
             flash('Invalid topic', 'danger')
             return redirect(url_for('seminar'))
@@ -244,45 +252,47 @@ def seminar_create():
         db = opendb()
         user_id = session.get('user_id')
         db_save(Seminar(topic=topic, speaker=speaker, linkedin=linkedin, 
-                        sem_description=sem_description, sem_date=sem_date, 
-                        sem_time=sem_time, sem_location=sem_location, 
-                        notes=save_file(notes), city=city), event=event, user_id=user_id)
+                        sem_description=sem_description, sem_date=date_sql, 
+                        sem_time=time_sql, sem_location=sem_location, 
+                        notes=save_file(notes), city=city,event=event, user_id=user_id))
+        
         flash('Seminar created successfully', 'success')
-        pass
+        return redirect(url_for('seminar'))
     flash('Create seminar', 'warning')
     return redirect(url_for('seminar'))
 
 @app.route('/speaker/create', methods=[ 'POST'])
 def speakerprofiles():
     if request.method == 'POST':
-        speaker_image = request.files.get('speaker_image')
-        speaker_name = request.form.get('speaker_name')
+        speaker_image = request.files.get('profile_image')
+        speakername = request.form.get('name')
         occupation = request.form.get('occupation') 
         company = request.form.get('company')
         gender = request.form.get('gender')
 
-        if (speaker_image) < None:
-            flash('Invalid speaker_image', 'danger')
-            return redirect(url_for('speakerprofiles'))
-        if (speaker_name) < 3:
+        # if (speaker_image) < None:
+        #     flash('Invalid speaker_image', 'danger')
+        #     return redirect(url_for('speakerprofiles'))
+        if len(speakername) < 3:
             flash('Invalid speaker_name', 'danger')
             return redirect(url_for('speakerprofiles'))
-        if (occupation) < 3:
+        if len(occupation) < 3:
             flash('Invalid speaker_occupation', 'danger')
             return redirect(url_for('speakerprofiles'))
-        if (company) < 3:
+        if len(company) < 3:
             flash('Invalid speaker_company', 'danger')
             return redirect(url_for('speakerprofiles'))
         
         db = opendb()
-        db_save(Speakerprofiles(speaker_image=save_file(speaker_image),
-                                speaker_name=speaker_name,occupation=occupation,
-                                company=company, gender=gender))
+        db_save(Speakerprofiles(profile_image=save_file(speaker_image),
+                                occupation=occupation,
+                                company=company, gender=gender, name=speakername ))
         flash('Speakerprofiles created successfully', 'success')
-        flash('Create speakerprofiles', 'warning')
         return redirect(url_for('speakerprofiles'))
+    flash('Create speakerprofiles', 'warning')
+    return redirect(url_for('speakerprofiles'))
 
-@app.route('/speaker/create', methods=[ 'POST'])
+@app.route('/speaker/profiles', methods=[ 'GET', 'POST'])
 def speakercreate():
     if session.get('isauth'):
         speakercreate = db_get_all(Profile )

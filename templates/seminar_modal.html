@@ -53,6 +53,7 @@
                         <label for="event_id" class="form-label">Event</label>
                         <select class="form-select form-select-lg" name="event_id" id="event_id">
                             <option selected>Select one</option>
+                            
                             {% for e in events %}
                             <option value="{{e.id}}">{{e.name}}</option>
                             {% endfor %}

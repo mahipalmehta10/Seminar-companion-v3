@@ -108,7 +108,7 @@ class Seminar(Base):
         verbose_name_plural = 'Seminars'
     
     def __repr__(self):
-        return f'<Seminar {self.name}>'
+        return f'<Seminar {self.topic}>'
     
     def __str__(self):
         return self.name

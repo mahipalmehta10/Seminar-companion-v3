@@ -2,15 +2,15 @@
 {% include 'event_modal.html' %}
 {% block css %}
 <style>
-  button{
-    margin-top: 20px;
-    margin-left: 10px;
-    position: center;
-  }
   body{
     background-image: url(https://wallpaperaccess.com/full/1156791.jpg);
     background-repeat: no-repeat;
     background-size: cover;
+  }
+  .col-md-10{
+    margin-top: 20px;
+    margin-left: 0px;
+    position: center;
   }
 </style>
 {% endblock %}
@@ -20,13 +20,13 @@
   <div class="row">
     {% if session.isauth %}
     <div class="col-md-2">
-      <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#eventModal">
+      <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#eventModal" style="margin-top: 10px ; ">
         create new event
       </button>
     </div>
     {% endif %}
     
-    <div class="col-md-10">
+<div class="col-md-10">
       <h1>Events</h1>
       {% for e in events %}
       <div class="p-5 mb-4 bg-light rounded-3">

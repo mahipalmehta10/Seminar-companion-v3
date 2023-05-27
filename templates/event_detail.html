@@ -1,0 +1,40 @@
+{% include 'base.html' %}
+{% include 'event_modal.html' %}
+{% block css %}
+<style>
+    body{
+        background-image: url(https://wallpaperaccess.com/full/1156791.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    .col-md-10{
+        margin-top: 20px;
+        margin-left: 0px;
+        position: center;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <!-- Modal trigger button -->
+    <div class="row">
+       
+        
+        <div class="col-md-10">
+            <h1>Seminars</h1>
+            {% for s in seminars %}
+            <div class="p-5 mb-4 bg-light rounded-3">
+                <div class="container-fluid py-5">
+                    <h1 class="display-5 fw-bold">{{s.topic}}</h1>
+                    <p class="col-md-8 fs-4">date :{{s.sem_date.date()}}.</p>
+                    <a class="btn btn-primary btn-lg" href="/seminar/detail/{{s.id}}">View Seminar Info</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block js %}
+{% endblock %}

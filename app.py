@@ -5,7 +5,7 @@ It contains the routes and views for the application.
 
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from database import opendb, DB_URL
-from database import User, Profile, Event, Seminar,Speakerprofiles
+from database import *
 from db_helper import *
 from validators import *
 from templates.logger import log
@@ -22,6 +22,9 @@ app.debug = True
 
 def session_add(key, value):
     session[key] = value
+
+def is_admin():
+    return session.get('user_id') == 1
 
 def save_file(file):
     filename = secure_filename(file.filename)
@@ -50,6 +53,7 @@ def login():
         session_add('user_name', user.name)
         session_add('user_email', user.email)
         session_add('isauth', True)
+        session_add('isadmin', is_admin())
         return redirect(url_for('dashboard'))
     else:
         flash('Invalid email or password', 'danger')
@@ -94,7 +98,8 @@ def register():
 @app.route('/dashboard')
 def dashboard():
     if session.get('isauth'):
-        return render_template('dashboard.html')
+        my_events = get_attending_events(session.get('user_id'))
+        return render_template('dashboard.html', my_events=my_events)
     else:
         return redirect(url_for('index'))
 
@@ -156,6 +161,7 @@ def view_profile():
 @app.route('/home')  
 def home():
     return render_template('index.html') 
+
 @app.route('/events')
 def events():
 #  get all upcoming events from current date
@@ -261,8 +267,8 @@ def seminar_create():
     flash('Create seminar', 'warning')
     return redirect(url_for('seminar'))
 
-@app.route('/speaker/create', methods=[ 'POST'])
-def speakerprofiles():
+@app.route('/speaker/create', methods=['GET','POST'])
+def speakercreate():
     if request.method == 'POST':
         speaker_image = request.files.get('profile_image')
         speakername = request.form.get('name')
@@ -284,22 +290,44 @@ def speakerprofiles():
             return redirect(url_for('speakerprofiles'))
         
         db = opendb()
+        user_id = session.get('user_id')
         db_save(Speakerprofiles(profile_image=save_file(speaker_image),
                                 occupation=occupation,
-                                company=company, gender=gender, name=speakername ))
+                                company=company, gender=gender, name=speakername, user_id=user_id ))
         flash('Speakerprofiles created successfully', 'success')
         return redirect(url_for('speakerprofiles'))
     flash('Create speakerprofiles', 'warning')
     return redirect(url_for('speakerprofiles'))
 
 @app.route('/speaker/profiles', methods=[ 'GET', 'POST'])
-def speakercreate():
+def speakerprofiles():
     if session.get('isauth'):
-        speakercreate = db_get_all(Profile )
-        return render_template('speakerprofiles.html', speakercreate=speakercreate)
+        speakers = db_get_all(Speakerprofiles )
+        seminars = db_get_all(Seminar)
+        return render_template('speaker.html',  seminars=seminars, speakers=speakers)
     else:
         flash('Please login to continue', 'danger')
         return redirect(url_for('index'))
+    
+    
+@app.route('/speakerprofile/detail/<int:id>')
+def speakerprofile_detail(id):
+    db = opendb()
+    speaker = db.query(Speakerprofiles).filter_by(id=id).first()
+    return render_template('speaker.html', speaker=speaker)
+
+# seminar details
+@app.route('/seminar/detail/<int:id>')
+def seminar_detail(id):
+    db = opendb()
+    # get event for this seminar
+    seminar = db.query(Seminar).filter_by(id=id).first()
+    event = db.query(Event).filter_by(id=seminar.event).first()
+    # speakers = db.query(Speakerprofiles).
+    return render_template('seminar_detail.html', seminar=seminar)
+
+
+
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=8000, debug=True)
  

@@ -1,5 +1,4 @@
 {% include 'base.html' %}
-{% include 'event_modal.html' %}
 {% block css %}
 <style>
   body{
@@ -7,18 +6,14 @@
     background-repeat: no-repeat;
     background-size: cover;
   }
-  .col-md-10{
-    margin-top: 20px;
-    margin-left: 0px;
-    position: center;
-  }
+  
 </style>
 {% endblock %}
 {% block content %}
 <div class="container">
   <!-- Modal trigger button -->
   <div class="row">
-    {% if session.isauth %}
+    {% if session.isadmin %}
     <div class="col-md-2">
       <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#eventModal" style="margin-top: 10px ; ">
         create new event
@@ -26,8 +21,10 @@
     </div>
     {% endif %}
     
-<div class="col-md-10">
-      <h1>Events</h1>
+    <div class="col-md-10">
+      <br>
+      <br>
+      <h1> Active Events</h1>
       {% for e in events %}
       <div class="p-5 mb-4 bg-light rounded-3">
         <div class="container-fluid py-5">
@@ -40,7 +37,10 @@
     </div>
   </div>
 </div>
+<footer>
+  {% include 'footer.html' %}       
+</footer> 
 
+{% include 'event_modal.html' %}
 {% endblock %}
-{% block js %}
-{% endblock %}
+

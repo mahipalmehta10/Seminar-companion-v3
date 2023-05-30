@@ -1,0 +1,65 @@
+{% include 'base.html' %}
+{% include 'speaker_modal.html' %}
+{% block css %}
+<style>
+  button{
+    margin-top: 20px;
+    margin-left: 10px;
+    position: center;
+  }
+  body{
+    background-image: url(https://wallpaperaccess.com/full/1156791.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  .card-glass{
+    background: rgba( 255, 255, 255, 0.25 );
+    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+    backdrop-filter: blur( 4px );
+    -webkit-backdrop-filter: blur( 4px );
+    border-radius: 10px;
+    border: 1px solid rgba( 255, 255, 255, 0.18 );
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+  {% if session.isadmin %}
+  <!-- Modal trigger button -->
+  <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#speakerprofilesModal">
+    create new profile
+  </button>
+</div>
+{% endif %}
+
+<div class="container">
+  <div class="row justify-content-center align-items-center g-2">
+    <div class="col-md-10 mx-auto " >
+      <h1>Speaker Profiles</h1>
+      <div class="row">
+        {% for s in speakers %}
+        <div class="col-md-6">
+          <div class="p-5 mb-4 card-glass rounded-3">
+            <div class="container-fluid py-5">
+              <img src="/{{s.profile_image}}" class="img-fluid rounded-circle" alt="/{{s.profile_image}}" style="aspect-ratio: 1/1; height: 10rem; width: 10rem; object-fit: cover;">
+              <h1 class="display-5 fw-bold">{{s.name}}</h1>
+              <div  class="">{{s.company}}</div>
+              <div  class="">{{s.occupation}}</div>
+              {% for sem in seminars %}
+              {% if sem.id == s.seminar %}
+              <div  class="lead">Seminar on <b>{{sem.topic}}</b></div>
+              {% endif %}
+              {% endfor %}
+              
+            </div>
+            <a class="btn btn-primary btn-lg" href="/speakerprofile/detail/{{s.id}}">View</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block js %}
+{% endblock %}

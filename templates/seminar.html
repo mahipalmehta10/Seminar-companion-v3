@@ -12,27 +12,37 @@
     background-repeat: no-repeat;
     background-size: cover;
   }
+  .display-5{
+    font-size: 30px;
+  }
 </style>
 {% endblock %}
 {% block content %}
+{% if session.isadmin %}
 <div class="container">
-<!-- Modal trigger button -->
-<button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#seminarModal">
-  create new seminar
-</button>
+  <!-- Modal trigger button -->
+  <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#seminarModal">
+    create new seminar
+  </button>
 </div>
+{% else %}
+   
+{% endif %}
 
-<div class col-md-10>
-  <h1>Seminars</h1>
-  {% for s in seminars %}
-  <div class="p-5 mb-4 bg-light rounded-3">
-    <div class="container-fluid py-5">
-      <h1 class="display-5 fw-bold">{{s.topic}}</h1>
-      {{s.sem_description}}
-      <a class="btn btn-primary btn-lg" href="/seminar/detail/{{s.id}}">View</a>
+
+<div class="container">
+  <div class="col-md-8 " >
+    <h1>Seminars</h1>
+    {% for s in seminars %}
+    <div class="p-5 mb-4 bg-light rounded-3">
+      <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">{{s.topic}}</h1>
+        <div  class=" display-5">{{s.sem_description}}</div>
+        <a class="btn btn-primary btn-lg" href="/seminar/detail/{{s.id}}">View</a>
+      </div>
     </div>
+    {% endfor %}
   </div>
-  {% endfor %}
 </div>
 {% endblock %}
 {% block js %}

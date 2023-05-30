@@ -67,9 +67,10 @@ class Event(Base):
     description = Column(String(255), nullable=False)
     date= Column(DateTime, nullable=False)
     time= Column(DateTime, nullable=False)
-    location = Column(String(64), nullable=False)
+    address = Column(String(64), nullable=False)
     days = Column(Integer, nullable=False)
     avatar=Column(String(255), nullable=False)
+    fee = Column(Float, nullable=False, default=0.0)
    
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
@@ -90,8 +91,6 @@ class Seminar(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     topic = Column(String(64), nullable=False)
-    speaker = Column(String(64), nullable=False)
-    linkedin = Column(String(255), nullable=False)
     sem_description = Column(String(255), nullable=False)
     sem_date= Column(DateTime, nullable=False)
     sem_time= Column(DateTime, nullable=False)
@@ -111,7 +110,7 @@ class Seminar(Base):
         return f'<Seminar {self.topic}>'
     
     def __str__(self):
-        return self.name
+        return self.topic
     
 class Speakerprofiles(Base):
     __tablename__ = 'speakerprofiles'
@@ -121,6 +120,7 @@ class Speakerprofiles(Base):
     occupation = Column(String(255), nullable=False)
     company = Column(String(64), nullable=False)
     profile_image=Column(String(255), nullable=False)
+    linkedin = Column(String(255), nullable=False)
     gender = Column(String(2), default='M')
     seminar = Column(ForeignKey('seminars.id'))
     created_at = Column(DateTime, default=datetime.now)
@@ -136,6 +136,93 @@ class Speakerprofiles(Base):
     
     def __str__(self):
         return self.name
+    
+class Attendee(Base):
+    __tablename__ = 'attendee'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    event = Column(ForeignKey('events.id'))
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    is_paid = Column(Integer, default=0)
+
+    class Meta:
+        ordering = ('-created_at',)
+        verbose_name = 'Attendee'
+        verbose_name_plural = 'Attendees'
+
+    def __repr__(self):
+        return f'<Attendee {self.user.name}>'
+    
+    def __str__(self):
+        return self.user.name
+    
+
+class Payment(Base):
+    __tablename__ = 'payments'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    event = Column(ForeignKey('events.id'))
+    amount = Column(Float, nullable=False, default=0.0)
+    transaction_id = Column(String(64), nullable=False)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    is_paid = Column(Integer, default=0)
+
+    class Meta:
+        ordering = ('-created_at',)
+        verbose_name = 'Payment'
+        verbose_name_plural = 'Payments'
+
+    def __repr__(self):
+        return f'<Payment {self.user.name}>'
+    
+    def __str__(self):
+        return self.user.name
+
+
+def get_list_of_attendees(event_id):
+    session = opendb()
+    attendees = session.query(Attendee).filter_by(event=event_id).all()
+    return attendees
+
+def get_list_of_speakers(seminar_id):
+    session = opendb()
+    speakers = session.query(Speakerprofiles).filter_by(seminar=seminar_id).all()
+    return speakers
+
+def get_list_of_seminars(event_id):
+    session = opendb()
+    seminars = session.query(Seminar).filter_by(event=event_id).all()
+    return seminars
+
+def save_payment(user_id, event_id, amount, transaction_id):
+    session = opendb()
+    payment = Payment(user_id=user_id, event=event_id, amount=amount, transaction_id=transaction_id)
+    session.add(payment)
+    session.commit()
+    session.close()
+
+def check_payment(user_id, event_id):
+    session = opendb()
+    payment = session.query(Payment).filter_by(user_id=user_id, event=event_id).first()
+    if payment:
+        return True
+    else:
+        return False
+    
+def save_attendee(user_id, event_id):
+    session = opendb()
+    attendee = Attendee(user_id=user_id, event=event_id)
+    session.add(attendee)
+    session.commit()
+    session.close()
+
+def get_attending_events(user_id):
+    session = opendb()
+    events = session.query(Event).join(Attendee).filter(Attendee.user_id == user_id).all()
+    return events
+
     
 def opendb():
     engine = create_engine(DB_URL, echo=True)

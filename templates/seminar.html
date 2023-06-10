@@ -1,5 +1,5 @@
-{% include 'base.html' %}
-{% include 'seminar_modal.html' %}
+{% extends 'base.html' %}
+
 {% block css %}
 <style>
   button{
@@ -31,19 +31,26 @@
 
 
 <div class="container">
-  <div class="col-md-8 " >
+  <div class="col-md-12 " >
     <h1>Seminars</h1>
-    {% for s in seminars %}
-    <div class="p-5 mb-4 bg-light rounded-3">
-      <div class="container-fluid py-5">
-        <h1 class="display-5 fw-bold">{{s.topic}}</h1>
-        <div  class=" display-5">{{s.sem_description}}</div>
-        <a class="btn btn-primary btn-lg" href="/seminar/detail/{{s.id}}">View</a>
+    <div class="row">
+
+      {% for s in seminars %}
+      <div class="col-md-6">
+        <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="container-fluid py-5">
+          <h1 class="display-5 fw-bold">{{s.topic}}</h1>
+          <div  class="fs-4">{{s.sem_description}}</div>
+          <p class="col-md-8 fs-4">date :{{s.sem_date.date()}}.</p>
+          <a class="btn btn-primary btn-lg" href="/seminar/detail/{{s.id}}">View</a>
+        </div>
       </div>
     </div>
     {% endfor %}
   </div>
+  </div>
 </div>
+{% include 'seminar_modal.html' %}
 {% endblock %}
-{% block js %}
-{% endblock %}
+
+{% block js %}{% endblock %}

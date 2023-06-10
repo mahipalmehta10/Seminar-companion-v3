@@ -67,7 +67,7 @@ class Event(Base):
     description = Column(String(255), nullable=False)
     date= Column(DateTime, nullable=False)
     time= Column(DateTime, nullable=False)
-    address = Column(String(64), nullable=False)
+    location = Column(String(64), nullable=False)
     days = Column(Integer, nullable=False)
     avatar=Column(String(255), nullable=False)
     fee = Column(Float, nullable=False, default=0.0)
@@ -94,9 +94,8 @@ class Seminar(Base):
     sem_description = Column(String(255), nullable=False)
     sem_date= Column(DateTime, nullable=False)
     sem_time= Column(DateTime, nullable=False)
-    sem_location = Column(String(64), nullable=False)
+    address = Column(String(64), nullable=False)
     notes = Column(String(255), nullable=False)
-    city = Column(String(64), nullable=False)
     event = Column(ForeignKey('events.id'))
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
@@ -120,7 +119,7 @@ class Speakerprofiles(Base):
     occupation = Column(String(255), nullable=False)
     company = Column(String(64), nullable=False)
     profile_image=Column(String(255), nullable=False)
-    linkedin = Column(String(255), nullable=False)
+    linkedin = Column(String(255), nullable=False, default="https://www.linkedin.com/")
     gender = Column(String(2), default='M')
     seminar = Column(ForeignKey('seminars.id'))
     created_at = Column(DateTime, default=datetime.now)
@@ -152,11 +151,10 @@ class Attendee(Base):
         verbose_name_plural = 'Attendees'
 
     def __repr__(self):
-        return f'<Attendee {self.user.name}>'
+        return f'<Attendee {self.user_id}>'
     
     def __str__(self):
-        return self.user.name
-    
+        return str(self.user_id)    
 
 class Payment(Base):
     __tablename__ = 'payments'
@@ -218,14 +216,11 @@ def save_attendee(user_id, event_id):
     session.commit()
     session.close()
 
-def get_attending_events(user_id):
-    session = opendb()
-    events = session.query(Event).join(Attendee).filter(Attendee.user_id == user_id).all()
-    return events
+
 
     
 def opendb():
-    engine = create_engine(DB_URL, echo=True)
+    engine = create_engine(DB_URL)
     Base.metadata.create_all(engine)
     session_factory = sessionmaker(bind=engine)
     Session = scoped_session(session_factory)

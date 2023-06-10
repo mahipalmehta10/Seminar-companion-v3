@@ -1,20 +1,41 @@
-{% include 'base.html' %}
-{% include 'event_modal.html' %}
+{% extends 'base.html' %}
+
 {% block css %}
 <style>
-    body{
-        background-image: url(https://wallpaperaccess.com/full/1156791.jpg);
-        background-repeat: no-repeat;
-        background-size: cover;
-    }
-    .col-md-10{
-        margin-top: 20px;
-        margin-left: 0px;
-        position: center;
-    }
+  button{
+    margin-top: 20px;
+    margin-left: 10px;
+    position: center;
+  }
+  body{
+    background-image: url(https://wallpaperaccess.com/full/1156791.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  .display-5{
+    font-size: 30px;
+  }
 </style>
 {% endblock %}
 {% block content %}
+{% if is_attending %}
+    <div class="container bg-success">
+      <div class="row my-5">
+          <div class="col p-2 text-light">
+            You are attending this event
+          </div>
+      </div>
+    </div>
+{% else %}
+<div class="container">
+  <div class="row my-5">
+      <div class="col py-5">
+          <a  class="btn btn-success" href="/event/register/{{eid}}" role="button">Register</a> for the event
+      </div>
+  </div>
+</div>
+{% endif %}
+
 <div class="container">
     <!-- Modal trigger button -->
     <div class="row">
@@ -34,7 +55,6 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
-{% endblock %}
-{% block js %}
-{% endblock %}
+{% block js %}{% endblock %}

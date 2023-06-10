@@ -1,5 +1,5 @@
-{% include 'base.html' %}
-{% include 'speaker_modal.html' %}
+{% extends 'base.html' %}
+
 {% block css %}
 <style>
   button{
@@ -23,13 +23,14 @@
 </style>
 {% endblock %}
 {% block content %}
+{% if session.isadmin %}
 <div class="container">
-  {% if session.isadmin %}
   <!-- Modal trigger button -->
   <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#speakerprofilesModal">
     create new profile
   </button>
 </div>
+{% else %}
 {% endif %}
 
 <div class="container">
@@ -60,6 +61,7 @@
     </div>
   </div>
 </div>
+{% include 'speaker_modal.html' %}
 {% endblock %}
 {% block js %}
 {% endblock %}

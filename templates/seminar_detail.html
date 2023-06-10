@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block css %}
+<style>
+  button{
+    margin-top: 20px;
+    margin-left: 10px;
+    position: center;
+  }
+  body{
+    background-image: url(https://wallpaperaccess.com/full/1156791.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  .display-5{
+    font-size: 30px;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row my-5">
+        <div class="col-md-12">
+            <h1>Event :  {{e.name}}</h1>
+        </div>
+    </div>
+    <div class="row align-items-md-stretch my-5">
+        <div class="col-md-6">
+            <div
+                class="h-100 p-5 bg-light border rounded-3">
+                <h2>{{s.topic}}</h2>
+                <p>{{s.sem_description}}</p>
+                <p>date :{{s.sem_date.date()}}.</p>
+                <p>time : {{s.sem_time.time()}}</p>
+                <p>venue : {{s.address}}</p>
+                # seminar notes
+                <p>notes : {{s.notes}}</p>
+
+
+            </div>
+        </div>
+        <div class="col-md-6">
+            {% for speaker in speakers %}
+                {{ Speaker|e }}<div
+                class="h-100 p-5 bg-light border rounded-3">
+                <h2>{{speaker.name}}</h2>
+                <p>{{speaker.occupation}}</p>
+                <p>{{speaker.linkedin}}</p>
+            </div> 
+            {% endfor %}
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}{% endblock %}

@@ -1,11 +1,33 @@
 {% extends 'base.html' %}
 
-{% block css %}{% endblock %}
+{% block css %}
+<style>
+  button{
+    margin-top: 20px;
+    margin-left: 10px;
+    position: center;
+  }
+  body{
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  .display-3{
+    font-size: 100px;
+  }
+  p{
+    font-size: 30px;
+  }
+</style>
+{% endblock %}
 {% block content %}
 <div class="container">
   <div class="col-md-10">
     <h1 class="display-3"> Welcome To Seminar Companion</h1>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi praesentium molestiae, dolore nihil dolores fugit quis minus quas consequatur obcaecati culpa incidunt atque nulla necessitatibus doloremque tempore amet aut dolorum laudantium officiis non possimus? Voluptatem beatae repellat non inventore nemo molestias hic voluptatibus recusandae? Error fugit necessitatibus dicta magni deleniti   </p> 
+    <p>
+      Welcome to our seminar companion web app! We're here to revolutionize the way you experience seminars and conferences. With our user-friendly interface and powerful features, we aim to enhance your event journey from start to finish
+      <br>
+      Say goodbye to missed sessions and hello to a new level of event engagement. Join us today and unlock the full potential of your next seminar!
+      </p> 
   </div>
 </div>
 {% endblock %}

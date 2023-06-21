@@ -11,7 +11,14 @@ from validators import *
 from logger import log
 from werkzeug.utils import secure_filename
 import os
+import json
 from datetime import datetime
+import stripe
+
+app = Flask(__name__)
+
+pkey = 'pk_test_51NLJp2SHtET9itmsOwQYkLRNorir5JmAZWuK4kGjbLhCYBkNMV2dvGeENbTmwZQQa4CPvY7Zev4oKSeFzF454z9v00F7CUrdCs'
+skey = 'sk_test_51NLJp2SHtET9itms2Qe80NSY3kXypBJfZllQV06YsAaBhME8FsIywj1aEeBuNR8ES90i34Jn278uVwbmFtpncpUQ00YCDV2v91'
 
 app = Flask(__name__)
 app.secret_key  = '()*(#@!@#)'
@@ -230,12 +237,17 @@ def event_detail(id):
     seminars = db.query(Seminar).filter_by(event=id).all()
     # check if user is attending
     if session.get('isauth'):
+        print(session)
         user_id = session.get('user_id')
+        print(f'{user_id} {id}')
+        print(f'{db.query(Attendee).filter_by(user_id=user_id, event=id)}')
         if db.query(Attendee).filter_by(user_id=user_id, event=id).first() is not None:
             is_attending = True
         else:
             is_attending = False
         return render_template('event_detail.html', event=event, seminars=seminars, eid=id, is_attending=is_attending)
+    else:
+        flash('Please login to register for this event', 'danger')
     return render_template('event_detail.html', event=event, seminars=seminars, eid=id)
 
 
@@ -353,10 +365,135 @@ def event_register(id):
         db = opendb()
         event = db.query(Event).filter_by(id=id).first()
         user_id = session.get('user_id')
-        attendee = Attendee(event=event.id, user_id=user_id)
-        db_save(attendee)
+        fees = event.fee
+        if fees > 0:
+            return redirect(url_for('event_payment', id=id))
+        else:
+            attendee = Attendee(event=event.id, user_id=user_id)
+            db_save(attendee)   
+            flash('You have registered for this event', 'success')
+            return redirect(url_for('event_detail', id=id))
+
+
+@app.route('/event/payment/<int:id>', methods=['GET', 'POST'])
+def event_payment(id):
+    if session.get('isauth'):
+        db = opendb()
+        event = db.query(Event).filter_by(id=id).first()
+        user_id = session.get('user_id')
+        fees = event.fee
+        # stripe payment integration
+        if request.method == 'POST':
+            stripe.api_key = skey
+            customer = stripe.Customer.create(email=request.form['email'])
+            ephemeralKey = stripe.EphemeralKey.create(
+                customer=customer['id'],
+                stripe_version='2022-11-15',
+            )
+            paymentIntent = stripe.PaymentIntent.create(
+                amount=int(float(request.form['amount'])),
+                currency='inr',
+                customer=customer['id'],
+                automatic_payment_methods={
+                'enabled': True,
+                },
+            )
+            print(f"Log: {request.form.values()}")
+            return jsonify(paymentIntent=paymentIntent.client_secret,
+                            ephemeralKey=ephemeralKey.secret,
+                            customer=customer.id,
+                            publishableKey=pkey)
+        return render_template('event_payment.html', event=event, fees=fees)
+    else:
+        flash('Please login to continue', 'danger')
+        return redirect(url_for('index'))
+    
+@app.route('/checkout', methods=['GET','POST'])
+def checkout():
+    if request.method == 'POST':
+        stripe.api_key = skey
+        customer = stripe.Customer.create(email=request.form['email'])
+        ephemeralKey = stripe.EphemeralKey.create(
+            customer=customer['id'],
+            stripe_version='2022-11-15',
+        )
+        paymentIntent = stripe.PaymentIntent.create(
+            amount=int(float(request.form['amount'])),
+            currency='inr',
+            customer=customer['id'],
+            automatic_payment_methods={
+            'enabled': True,
+            },
+        )
+        print(f"Log: {request.form.values()}")
+        return jsonify(paymentIntent=paymentIntent.client_secret,
+                        ephemeralKey=ephemeralKey.secret,
+                        customer=customer.id,
+                        publishableKey=pkey)
+    return render_template('index.html')
+
+@app.route('/config')
+def get_publishable_key():
+    return jsonify({'publicKey': pkey})
+
+@app.route('/create-checkout-session', methods=['GET','POST'])
+def create_checkout_session():
+    try:
+        stripe.api_key = skey
+        amount = request.form['amount']
+        email = request.form['email']
+        name = request.form['title']
+        event_id = request.form['event_id']
+        user_id = session.get('user_id')
+        session_add('event_id', event_id)
+        session_add('user_id', user_id)
+        # try:
+        domain_url = "http://127.0.0.1:8000/"
+        checkout_session = stripe.checkout.Session.create(
+                success_url=domain_url + "success?session_id={CHECKOUT_SESSION_ID}",
+                cancel_url=domain_url + "cancelled",
+                payment_method_types=["card"],
+                mode="payment",
+                line_items=[
+                    {   
+                        'quantity': 1,
+                        "price_data": {
+                            "currency": "inr",
+                            "unit_amount": int(float(amount))*100,
+                            "product_data": {
+                                "name": name,
+                                "images": ["https://i.imgur.com/EHyR2nP.png"],
+                            },
+                        },
+                    }
+                ]
+        )
+        return jsonify({"sessionId": checkout_session["id"]})
+    except Exception as e:
+        print(e)
+        return jsonify(error=str(e)), 403
+
+@app.route('/success')
+def success():
+    if session.get('isauth'):
+        db = opendb()
+        event_id = session.get('event_id')
+        user_id = session.get('user_id')
+        # remove session data
+        session['event_id'] = None
+        event = db.query(Event).filter_by(id=event_id).first()
+        payment = Payment(event=event_id, user_id=user_id, amount= event.fee, transaction_id=f'{user_id}{event_id}', is_paid=1)
+        attendee = Attendee(event=event_id, user_id=user_id, is_paid=1)
+        db_save(attendee)   
         flash('You have registered for this event', 'success')
-        return redirect(url_for('event_detail', id=id))
+        return redirect(url_for('event_detail', id=event_id))
+    else:
+        print(session)
+    return render_template('success.html')
+
+@app.route('/cancelled')
+def cancelled():
+    return render_template('cancelled.html')
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=8000, debug=True)
